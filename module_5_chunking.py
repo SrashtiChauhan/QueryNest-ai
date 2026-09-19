@@ -1,3 +1,14 @@
+from huggingface_hub import InferenceClient
+from dotenv import load_dotenv
+import os
+load_dotenv()
+HF_TOKEN=os.getenv("HF_TOKEN")
+print("HF token loaded:", HF_TOKEN is not None)
+client = InferenceClient(token=HF_TOKEN)
+
+
+
+
 document = """
 Python is a high-level programming language.
 It is widely used in web development and data science.
@@ -146,3 +157,37 @@ for idx in indices[0]:
 context="\n\n".join(retrieved_chunks)
 print("\nContext for the query:")
 print(context)
+
+prompt = f"""
+Use the following context to answer the question.
+
+Context:
+{context}
+
+Question:
+{query}
+
+Answer:
+"""
+
+print("\nGenerated Prompt:")
+print(prompt)
+
+#send prompt to llm
+response=client.chat.completions.create(
+    model="deepseek-ai/DeepSeek-V3-0324",
+    messages=[{"role": "user", "content": prompt}],
+    max_tokens=200
+)
+answer = response.choices[0].message.content
+
+print("\nFinal Answer:")
+print(answer)
+# print("\nRaw response:")
+# print(response)
+
+# print("\nMessage:")
+# print(response.choices[0].message)
+
+# print("\nContent:")
+# print(response.choices[0].message.content)
