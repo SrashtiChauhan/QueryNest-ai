@@ -1,0 +1,6 @@
+Artificial intelligence allows computers to perform tasks that normally require human intelligence.
+
+Machine learning is a subset of artificial intelligence that learns patterns from data.
+
+Generative AI can create new content such as text, images, audio, and code.
+
