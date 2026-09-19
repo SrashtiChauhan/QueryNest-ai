@@ -36,17 +36,35 @@ class RAGPipeline:
         scores, indices = self.store.search(query_embedding, k)
 
         # 3. Retrieve chunks
+        # retrieved_chunks = [
+        #     self.chunks[idx]
+        #     for idx in indices[0]
+        # ]
+        #check teh best imilarity score
+        best_score=scores[0][0]
+        if best_score<0.5:
+            return ("I don't have enough information in the provided context.", [], scores)
+        #recieve chunks when sc is high enough
         retrieved_chunks = [
             self.chunks[idx]
             for idx in indices[0]
         ]
+
 
         # 4. Build context
         context = "\n\n".join(retrieved_chunks)
 
         # 5. Build prompt
         prompt = f"""
-Use the following context to answer the question.
+You are a knowledge assistant.
+
+Answer the question using ONLY the information provided in the context.
+
+Rules:
+- Do not use outside knowledge.
+- Do not make up information.
+- If the answer is not contained in the context, say:
+  "I don't have enough information in the provided context."
 
 Context:
 {context}
