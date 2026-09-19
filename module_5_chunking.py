@@ -94,3 +94,55 @@ print("\nChunks:")
 
 for i, chunk in enumerate(chunks, start=1):
     print(f"Chunk {i}: {chunk}")
+
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+embeddings = model.encode(chunks)
+
+print("\nEmbedding information:")
+print("Number of chunks:", len(chunks))
+print("Embedding shape:", embeddings.shape)
+
+
+import faiss
+import numpy as np
+#emb to float32
+embeddings = np.asarray(embeddings, dtype="float32")
+faiss.normalize_L2(embeddings)
+dimension = embeddings.shape[1]
+index = faiss.IndexFlatIP(dimension)
+index.add(embeddings)
+
+print("\nFAISS information:")
+print("Vector dimension:", dimension)
+print("Number of vectors:", index.ntotal)
+
+
+
+query = "What is Python used for?"
+
+#query to emb
+query_embedding = model.encode([query])
+query_embedding = np.asarray(query_embedding, dtype="float32")
+faiss.normalize_L2(query_embedding)
+k=2
+scores, indices = index.search(query_embedding, k)
+
+print("\nQuery:")
+print(query)
+
+print("\nTop results:")
+
+for rank, (score, idx) in enumerate(zip(scores[0], indices[0]), start=1):
+    print(f"\nRank {rank}")
+    print("Chunk:", chunks[idx])
+    print("Score:", score)
+
+retrieved_chunks=[]
+for idx in indices[0]:
+    retrieved_chunks.append(chunks[idx])
+
+context="\n\n".join(retrieved_chunks)
+print("\nContext for the query:")
+print(context)
