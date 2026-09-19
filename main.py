@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from src.ingestion.loader import load_text_file
+from src.ingestion.loader import load_text_files
 from src.rag_pipeline import RAGPipeline
 
 
@@ -12,18 +12,18 @@ load_dotenv()
 # Python is also popular for automation and artificial intelligence.
 # Many developers use Python because its syntax is simple and readable.
 # """
-document = load_text_file("data/raw/python_notes.txt")
+documents = load_text_files("data/raw")
 
 rag = RAGPipeline()
 
 # Add document to the RAG system
-rag.ingest(document)
+rag.ingest(documents)
 
 # Ask a question
-# question = "What is the capital of France?"
-question = "What is python used for?"
+question = "What is the capital of France?"
+# question = "What can Generative AI create?"
 
-answer, chunks, scores = rag.query(question, k=2)
+answer, chunks, sources, scores = rag.query(question, k=2)
 
 print("\nQuestion:")
 print(question)
@@ -41,12 +41,13 @@ print(question)
 if chunks:
     print("\nRetrieved Chunks:")
 
-    for i, (chunk, score) in enumerate(
-        zip(chunks, scores[0]),
+    for i, (chunk,source, score) in enumerate(
+        zip(chunks, sources, scores[0]),
         start=1
     ):
         print(f"\nRank {i}")
         print("Score:", score)
+        print("Source:", source)
         print("Chunk:", chunk)
 
 else:
