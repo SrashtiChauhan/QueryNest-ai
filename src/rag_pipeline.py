@@ -92,6 +92,13 @@ class RetrievalResult:
         self.chunk = chunk
         self.source = source
         self.score = score
+
+    def __repr__(self):
+        return (
+            f"RetrievalResult("
+            f"source='{self.source}', "
+            f"score={self.score:.4f})"
+        )
 class RAGPipeline:
     def __init__(self):
         self.embedder = Embedder()
