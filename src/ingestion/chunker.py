@@ -1,4 +1,6 @@
-def chunk_document(document, chunk_size=100):
+from src.config import CHUNK_SIZE
+
+def chunk_document(document, chunk_size=CHUNK_SIZE):
     """
     Split a document into sentence-aware chunks
     with sentence-level overlap.
