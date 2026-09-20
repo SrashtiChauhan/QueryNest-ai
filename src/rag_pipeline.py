@@ -85,6 +85,7 @@ from src.ingestion.chunker import chunk_document
 from src.embeddings.embedder import Embedder
 from src.retrieval.faiss_store import FAISSStore
 from src.generation.llm import LLM
+from src.config import TOP_K, SIMILARITY_THRESHOLD
 # import numpy as np
 
 class RetrievalResult:
@@ -143,7 +144,7 @@ class RAGPipeline:
         # Add embeddings
         self.store.add(embeddings)
 
-    def query(self, question, k=2):
+    def query(self, question, k=TOP_K):
         # Embed question
         query_embedding = self.embedder.encode([question])
 
@@ -156,7 +157,7 @@ class RAGPipeline:
         # Check best similarity score
         best_score = scores[0][0]
 
-        if best_score < 0.5:
+        if best_score < SIMILARITY_THRESHOLD:
             return (
                 "I don't have enough information in the provided context.",
                 []
