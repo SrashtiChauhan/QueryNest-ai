@@ -6,18 +6,11 @@ from src.rag_pipeline import RAGPipeline
 
 load_dotenv()
 
-
-# Load all documents
 documents = load_text_files("data/raw")
-
-# Create RAG pipeline
 rag = RAGPipeline()
-
-# Ingest documents
 rag.ingest(documents)
 
 
-# Ask a question
 question = input("\nEnter your question: ")
 
 answer, retrieved_results = rag.query(
