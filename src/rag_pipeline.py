@@ -85,6 +85,7 @@ from src.ingestion.chunker import chunk_document
 from src.embeddings.embedder import Embedder
 from src.retrieval.faiss_store import FAISSStore
 from src.generation.llm import LLM
+from src.generation.prompt import build_prompt
 from src.config import TOP_K, SIMILARITY_THRESHOLD
 # import numpy as np
 
@@ -179,30 +180,14 @@ class RAGPipeline:
         context = "\n\n".join(
             result.chunk
             for result in retrieved_results
-)
+        )
 
         # Build grounded prompt
-        prompt = f"""
-You are a knowledge assistant.
-
-Answer the question using ONLY the information provided in the context.
-
-Rules:
-- Do not use outside knowledge.
-- Do not make up information.
-- If the answer is not contained in the context, say:
-  "I don't have enough information in the provided context."
-
-Context:
-{context}
-
-Question:
-{question}
-
-Answer:
-"""
+        prompt = build_prompt(
+            context,
+            question
+        )
 
         # Generate answer
         answer = self.llm.generate(prompt)
-
         return answer, retrieved_results
