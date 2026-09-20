@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 
 from src.ingestion.loader import load_text_files
 from src.rag_pipeline import RAGPipeline
-
+from src.config import TOP_K
 
 load_dotenv()
 
@@ -15,7 +15,7 @@ question = input("\nEnter your question: ")
 
 answer, retrieved_results = rag.query(
     question,
-    k=2
+    k=TOP_K
 )
 
 

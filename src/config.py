@@ -1,0 +1,9 @@
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+
+CHUNK_SIZE = 100
+
+TOP_K = 2
+
+SIMILARITY_THRESHOLD = 0.5
+
+LLM_MODEL = "deepseek-ai/DeepSeek-V3-0324"
