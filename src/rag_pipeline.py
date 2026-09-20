@@ -85,7 +85,13 @@ from src.ingestion.chunker import chunk_document
 from src.embeddings.embedder import Embedder
 from src.retrieval.faiss_store import FAISSStore
 from src.generation.llm import LLM
-import numpy as np
+# import numpy as np
+
+class RetrievalResult:
+    def __init__(self, chunk, source, score):
+        self.chunk = chunk
+        self.source = source
+        self.score = score
 class RAGPipeline:
     def __init__(self):
         self.embedder = Embedder()
@@ -146,21 +152,26 @@ class RAGPipeline:
         if best_score < 0.5:
             return (
                 "I don't have enough information in the provided context.",
-                [],
-                [],
-                scores
+                []
             )
 
         # Retrieve chunks and their sources
-        retrieved_chunks = []
-        retrieved_sources = []
+        retrieved_results = []
 
-        for idx in indices[0]:
-            retrieved_chunks.append(self.chunks[idx])
-            retrieved_sources.append(self.sources[idx])
+        for idx, score in zip(indices[0], scores[0]):
+            result = RetrievalResult(
+                chunk=self.chunks[idx],
+                source=self.sources[idx],
+                score=score
+            )
+
+            retrieved_results.append(result)
 
         # Build context
-        context = "\n\n".join(retrieved_chunks)
+        context = "\n\n".join(
+            result.chunk
+            for result in retrieved_results
+)
 
         # Build grounded prompt
         prompt = f"""
@@ -186,9 +197,4 @@ Answer:
         # Generate answer
         answer = self.llm.generate(prompt)
 
-        return (
-            answer,
-            retrieved_chunks,
-            retrieved_sources,
-            scores
-        )
+        return answer, retrieved_results
