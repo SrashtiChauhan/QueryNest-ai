@@ -1,5 +1,6 @@
 import os
 from huggingface_hub import InferenceClient
+from src.config import LLM_MODEL
 
 
 class LLM:
@@ -10,7 +11,7 @@ class LLM:
             raise ValueError("HF_TOKEN not found in environment.")
 
         self.client = InferenceClient(token=token)
-        self.model = "deepseek-ai/DeepSeek-V3-0324"
+        self.model = LLM_MODEL
 
     def generate(self, prompt):
         response = self.client.chat.completions.create(
